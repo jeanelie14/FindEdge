@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyTitle>FindEdge.Plugins</AssemblyTitle>
+    <AssemblyDescription>Système de plugins pour FindEdge</AssemblyDescription>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FindEdge.Core\FindEdge.Core.csproj" />
+  </ItemGroup>
+
+</Project>
