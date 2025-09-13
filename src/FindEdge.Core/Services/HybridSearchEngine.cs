@@ -9,49 +9,32 @@ using FindEdge.Core.Models;
 namespace FindEdge.Core.Services
 {
     /// <summary>
-    /// Moteur de recherche hybride combinant indexation et live scan
+    /// Moteur de recherche hybride combinant index et scan en direct
     /// </summary>
-    public class HybridSearchEngine : IIndexedSearchEngine
+    public class HybridSearchEngine : IHybridSearchEngine
     {
-        private readonly ISearchEngine _liveSearchEngine;
+        private readonly ISearchEngine _searchEngine;
         private readonly IIndexManager _indexManager;
-        private SearchMode _currentSearchMode = SearchMode.Hybrid;
-        private readonly SearchPerformanceStats _performanceStats = new();
-
-        public HybridSearchEngine(ISearchEngine liveSearchEngine, IIndexManager indexManager)
-        {
-            _liveSearchEngine = liveSearchEngine ?? throw new ArgumentNullException(nameof(liveSearchEngine));
-            _indexManager = indexManager ?? throw new ArgumentNullException(nameof(indexManager));
-
-            // S'abonner aux événements du moteur live
-            _liveSearchEngine.SearchProgress += OnLiveSearchProgress;
-            _liveSearchEngine.ResultFound += OnLiveResultFound;
-        }
-
-        public SearchMode CurrentSearchMode
-        {
-            get => _currentSearchMode;
-            set => _currentSearchMode = value;
-        }
-
-        public IIndexManager IndexManager => _indexManager;
+        private HybridSearchMode _currentMode = HybridSearchMode.Adaptive;
+        private readonly HybridSearchStats _performanceStats = new();
 
         public event EventHandler<SearchProgressEventArgs>? SearchProgress;
         public event EventHandler<SearchResultEventArgs>? ResultFound;
 
+        public HybridSearchEngine(ISearchEngine searchEngine, IIndexManager indexManager)
+        {
+            _searchEngine = searchEngine ?? throw new ArgumentNullException(nameof(searchEngine));
+            _indexManager = indexManager ?? throw new ArgumentNullException(nameof(indexManager));
+        }
+
         public async Task<IEnumerable<SearchResult>> SearchAsync(SearchOptions options, CancellationToken cancellationToken = default)
         {
-            return _currentSearchMode switch
-            {
-                SearchMode.Hybrid => await SearchHybridAsync(options, cancellationToken),
-                SearchMode.IndexOnly => await SearchIndexOnlyAsync(options, cancellationToken),
-                SearchMode.LiveOnly => await SearchLiveOnlyAsync(options, cancellationToken),
-                _ => await SearchHybridAsync(options, cancellationToken)
-            };
+            return await SearchHybridAsync(options, cancellationToken);
         }
 
         public IEnumerable<SearchResult> Search(SearchOptions options)
         {
+            // Implémentation synchrone utilisant la méthode asynchrone
             return SearchAsync(options).GetAwaiter().GetResult();
         }
 
@@ -62,23 +45,20 @@ namespace FindEdge.Core.Services
 
             try
             {
-                // Recherche dans l'index en premier (plus rapide)
-                if (_indexManager.IsIndexAvailable)
+                switch (_currentMode)
                 {
-                    var indexResults = await _indexManager.SearchIndexAsync(options, cancellationToken);
-                    results.AddRange(indexResults);
-                }
-
-                // Si pas assez de résultats ou index non disponible, compléter avec live scan
-                if (results.Count < options.MaxResults && _currentSearchMode != SearchMode.IndexOnly)
-                {
-                    var liveResults = await _liveSearchEngine.SearchAsync(options, cancellationToken);
-                    
-                    // Fusionner les résultats en évitant les doublons
-                    var existingPaths = new HashSet<string>(results.Select(r => r.FilePath));
-                    var additionalResults = liveResults.Where(r => !existingPaths.Contains(r.FilePath));
-                    
-                    results.AddRange(additionalResults);
+                    case HybridSearchMode.IndexFirst:
+                        results = (await SearchIndexFirstAsync(options, cancellationToken)).ToList();
+                        break;
+                    case HybridSearchMode.LiveFirst:
+                        results = (await SearchLiveFirstAsync(options, cancellationToken)).ToList();
+                        break;
+                    case HybridSearchMode.Parallel:
+                        results = (await SearchParallelAsync(options, cancellationToken)).ToList();
+                        break;
+                    case HybridSearchMode.Adaptive:
+                        results = (await SearchAdaptiveAsync(options, cancellationToken)).ToList();
+                        break;
                 }
 
                 // Trier par score de pertinence
@@ -87,7 +67,7 @@ namespace FindEdge.Core.Services
                 _performanceStats.HybridSearchCount++;
                 _performanceStats.AverageHybridSearchTime = CalculateAverageTime(_performanceStats.AverageHybridSearchTime, _performanceStats.HybridSearchCount, DateTime.UtcNow - startTime);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // En cas d'erreur, fallback vers live scan uniquement
                 results = (await SearchLiveOnlyAsync(options, cancellationToken)).ToList();
@@ -99,16 +79,21 @@ namespace FindEdge.Core.Services
         public async Task<IEnumerable<SearchResult>> SearchIndexOnlyAsync(SearchOptions options, CancellationToken cancellationToken = default)
         {
             var startTime = DateTime.UtcNow;
+            var results = new List<SearchResult>();
 
-            if (!_indexManager.IsIndexAvailable)
+            try
             {
-                throw new InvalidOperationException("L'index n'est pas disponible. Veuillez construire l'index d'abord.");
-            }
+                // Utiliser le gestionnaire d'index pour la recherche
+                results = (await _indexManager.SearchIndexAsync(options, cancellationToken)).ToList();
 
-            var results = await _indexManager.SearchIndexAsync(options, cancellationToken);
-            
-            _performanceStats.IndexSearchCount++;
-            _performanceStats.AverageIndexSearchTime = CalculateAverageTime(_performanceStats.AverageIndexSearchTime, _performanceStats.IndexSearchCount, DateTime.UtcNow - startTime);
+                _performanceStats.IndexSearchCount++;
+                _performanceStats.AverageIndexSearchTime = CalculateAverageTime(_performanceStats.AverageIndexSearchTime, _performanceStats.IndexSearchCount, DateTime.UtcNow - startTime);
+            }
+            catch (Exception)
+            {
+                // En cas d'erreur, retourner une liste vide
+                results = new List<SearchResult>();
+            }
 
             return results;
         }
@@ -116,48 +101,102 @@ namespace FindEdge.Core.Services
         public async Task<IEnumerable<SearchResult>> SearchLiveOnlyAsync(SearchOptions options, CancellationToken cancellationToken = default)
         {
             var startTime = DateTime.UtcNow;
+            var results = new List<SearchResult>();
 
-            var results = await _liveSearchEngine.SearchAsync(options, cancellationToken);
-            
-            _performanceStats.LiveSearchCount++;
-            _performanceStats.AverageLiveSearchTime = CalculateAverageTime(_performanceStats.AverageLiveSearchTime, _performanceStats.LiveSearchCount, DateTime.UtcNow - startTime);
+            try
+            {
+                // Utiliser le moteur de recherche en direct
+                results = (await _searchEngine.SearchAsync(options, cancellationToken)).ToList();
+
+                _performanceStats.LiveSearchCount++;
+                _performanceStats.AverageLiveSearchTime = CalculateAverageTime(_performanceStats.AverageLiveSearchTime, _performanceStats.LiveSearchCount, DateTime.UtcNow - startTime);
+            }
+            catch (Exception)
+            {
+                // En cas d'erreur, retourner une liste vide
+                results = new List<SearchResult>();
+            }
 
             return results;
         }
 
-        public void SwitchSearchMode(SearchMode mode)
+        public async Task<HybridSearchStats> GetPerformanceStatsAsync(CancellationToken cancellationToken = default)
         {
-            _currentSearchMode = mode;
+            await Task.Delay(1, cancellationToken); // Simuler un délai minimal
+            return _performanceStats;
         }
 
-        public SearchPerformanceStats GetPerformanceStats()
+        public async Task ConfigureHybridModeAsync(HybridSearchMode mode, CancellationToken cancellationToken = default)
         {
-            var status = _indexManager.GetIndexStatusAsync().GetAwaiter().GetResult();
-            
-            _performanceStats.TotalIndexedDocuments = status.DocumentCount;
-            _performanceStats.TotalIndexSize = status.IndexSize;
-            _performanceStats.LastIndexUpdate = status.LastUpdated;
+            await Task.Delay(1, cancellationToken); // Simuler un délai minimal
+            _currentMode = mode;
+        }
 
-            return _performanceStats;
+        private async Task<IEnumerable<SearchResult>> SearchIndexFirstAsync(SearchOptions options, CancellationToken cancellationToken)
+        {
+            var results = await SearchIndexOnlyAsync(options, cancellationToken);
+            
+            // Si pas assez de résultats, compléter avec une recherche live
+            if (results.Count() < options.MaxResults)
+            {
+                var liveResults = await SearchLiveOnlyAsync(options, cancellationToken);
+                results = results.Concat(liveResults).Distinct().Take(options.MaxResults);
+            }
+
+            return results;
+        }
+
+        private async Task<IEnumerable<SearchResult>> SearchLiveFirstAsync(SearchOptions options, CancellationToken cancellationToken)
+        {
+            var results = await SearchLiveOnlyAsync(options, cancellationToken);
+            
+            // Si pas assez de résultats, compléter avec une recherche d'index
+            if (results.Count() < options.MaxResults)
+            {
+                var indexResults = await SearchIndexOnlyAsync(options, cancellationToken);
+                results = results.Concat(indexResults).Distinct().Take(options.MaxResults);
+            }
+
+            return results;
+        }
+
+        private async Task<IEnumerable<SearchResult>> SearchParallelAsync(SearchOptions options, CancellationToken cancellationToken)
+        {
+            var indexTask = SearchIndexOnlyAsync(options, cancellationToken);
+            var liveTask = SearchLiveOnlyAsync(options, cancellationToken);
+
+            await Task.WhenAll(indexTask, liveTask);
+
+            var indexResults = await indexTask;
+            var liveResults = await liveTask;
+
+            // Combiner et dédupliquer les résultats
+            return indexResults.Concat(liveResults)
+                              .GroupBy(r => r.FilePath)
+                              .Select(g => g.OrderByDescending(r => r.RelevanceScore).First())
+                              .OrderByDescending(r => r.RelevanceScore)
+                              .Take(options.MaxResults);
+        }
+
+        private async Task<IEnumerable<SearchResult>> SearchAdaptiveAsync(SearchOptions options, CancellationToken cancellationToken)
+        {
+            // Mode adaptatif : choisir la meilleure stratégie selon les statistiques
+            if (_performanceStats.IndexHitRate > _performanceStats.LiveHitRate)
+            {
+                return await SearchIndexFirstAsync(options, cancellationToken);
+            }
+            else
+            {
+                return await SearchLiveFirstAsync(options, cancellationToken);
+            }
         }
 
         private TimeSpan CalculateAverageTime(TimeSpan currentAverage, int count, TimeSpan newTime)
         {
-            if (count == 1)
-                return newTime;
-
-            var totalTicks = (currentAverage.Ticks * (count - 1) + newTime.Ticks) / count;
-            return TimeSpan.FromTicks(totalTicks);
-        }
-
-        private void OnLiveSearchProgress(object? sender, SearchProgressEventArgs e)
-        {
-            SearchProgress?.Invoke(this, e);
-        }
-
-        private void OnLiveResultFound(object? sender, SearchResultEventArgs e)
-        {
-            ResultFound?.Invoke(this, e);
+            if (count <= 1) return newTime;
+            
+            var totalTicks = (currentAverage.Ticks * (count - 1)) + newTime.Ticks;
+            return TimeSpan.FromTicks(totalTicks / count);
         }
     }
 }

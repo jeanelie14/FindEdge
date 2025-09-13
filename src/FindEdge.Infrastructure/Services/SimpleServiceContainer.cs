@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using FindEdge.Core.Interfaces;
+using FindEdge.Core.Services;
+using FindEdge.Infrastructure.Parsers;
 
 namespace FindEdge.Infrastructure.Services
 {
@@ -47,6 +49,50 @@ namespace FindEdge.Infrastructure.Services
         {
             var type = typeof(T);
             return _services.ContainsKey(type) || _factories.ContainsKey(type);
+        }
+
+        public T Get<T>() where T : class
+        {
+            return Resolve<T>();
+        }
+
+        public void RegisterAllServices()
+        {
+            // Enregistrer les services de base
+            Register<IFileScanner>(() => new FileScanner());
+            Register<IContentParserRegistry>(() => new ContentParserRegistry());
+            Register<IIndexManager>(() => new SimpleIndexManager(Resolve<IFileScanner>(), Resolve<IContentParserRegistry>()));
+            Register<ISearchEngine>(() => new LiveSearchEngine(Resolve<IContentParserRegistry>()));
+            Register<IHybridSearchEngine>(() => new HybridSearchEngine(Resolve<ISearchEngine>(), Resolve<IIndexManager>()));
+            Register<IDuplicateDetector>(() => new DuplicateDetector(Resolve<IContentParserRegistry>()));
+            // Register<IExportService>(() => new MockExportService());
+            
+            // Enregistrer les services avancés
+            Register<ISemanticSearchEngine>(() => new SemanticSearchEngine(
+                Resolve<ISearchEngine>(),
+                new TextFileParser()
+            ));
+            Register<IIntelligentSuggestions>(() => new IntelligentSuggestionsService(Resolve<ISearchEngine>(), Resolve<IIndexManager>()));
+            Register<IVisualizationService>(() => new VisualizationService());
+            Register<ICollaborationService>(() => new MockCollaborationService());
+            Register<IHelpLearningService>(() => new MockHelpLearningService());
+            
+            // Register missing services with mock implementations
+            Register<IAnalyticsService>(() => new MockAnalyticsService());
+            Register<IPersonalizationService>(() => new MockPersonalizationService());
+        }
+
+        public void Dispose()
+        {
+            // Nettoyer les services si nécessaire
+            foreach (var service in _services.Values)
+            {
+                if (service is IDisposable disposable)
+                    disposable.Dispose();
+            }
+            
+            _services.Clear();
+            _factories.Clear();
         }
     }
 }

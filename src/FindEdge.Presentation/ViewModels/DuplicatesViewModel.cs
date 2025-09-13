@@ -24,10 +24,10 @@ namespace FindEdge.Presentation.ViewModels
             _exportService = exportService ?? throw new ArgumentNullException(nameof(exportService));
 
             // Initialiser les commandes
-            DetectDuplicatesCommand = new RelayCommand(async () => await ExecuteDetectDuplicatesAsync(), () => !IsDetecting && SearchResults.Any());
-            ExportDuplicatesCommand = new RelayCommand(async () => await ExecuteExportDuplicatesAsync(), () => DuplicateGroups.Any());
-            ClearDuplicatesCommand = new RelayCommand(() => ExecuteClearDuplicates(), () => DuplicateGroups.Any());
-            DeleteSelectedCommand = new RelayCommand(() => ExecuteDeleteSelected(), () => SelectedFiles.Any());
+            DetectDuplicatesCommand = new RelayCommandSimple(async () => await ExecuteDetectDuplicatesAsync(), () => !IsDetecting && SearchResults.Any());
+            ExportDuplicatesCommand = new RelayCommandSimple(async () => await ExecuteExportDuplicatesAsync(), () => DuplicateGroups.Any());
+            ClearDuplicatesCommand = new RelayCommandSimple(() => ExecuteClearDuplicates(), () => DuplicateGroups.Any());
+            DeleteSelectedCommand = new RelayCommandSimple(() => ExecuteDeleteSelected(), () => SelectedFiles.Any());
 
             // Initialiser les collections
             DuplicateGroups = new ObservableCollection<DuplicateGroup>();

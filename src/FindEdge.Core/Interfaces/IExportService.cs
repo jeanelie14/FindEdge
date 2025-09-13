@@ -14,17 +14,17 @@ namespace FindEdge.Core.Interfaces
         /// <summary>
         /// Exporte les résultats de recherche dans le format spécifié
         /// </summary>
-        Task<byte[]> ExportSearchResultsAsync(IEnumerable<SearchResult> results, ExportFormat format, ExportOptions options = null, CancellationToken cancellationToken = default);
+        Task<byte[]> ExportSearchResultsAsync(IEnumerable<SearchResult> results, ExportFormat format, ExportOptions options, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Exporte les groupes de doublons dans le format spécifié
         /// </summary>
-        Task<byte[]> ExportDuplicateGroupsAsync(IEnumerable<DuplicateGroup> groups, ExportFormat format, ExportOptions options = null, CancellationToken cancellationToken = default);
+        Task<byte[]> ExportDuplicateGroupsAsync(IEnumerable<DuplicateGroup> groups, ExportFormat format, ExportOptions options, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Exporte les statistiques de recherche dans le format spécifié
         /// </summary>
-        Task<byte[]> ExportStatisticsAsync(SearchStatistics statistics, ExportFormat format, ExportOptions options = null, CancellationToken cancellationToken = default);
+        Task<byte[]> ExportStatisticsAsync(SearchStatistics statistics, ExportFormat format, ExportOptions options, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Obtient les formats d'export supportés

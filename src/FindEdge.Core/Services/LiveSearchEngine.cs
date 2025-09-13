@@ -75,7 +75,7 @@ namespace FindEdge.Core.Services
             {
                 // L'opération a été annulée
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Log l'erreur
             }
@@ -230,7 +230,11 @@ namespace FindEdge.Core.Services
     /// </summary>
     public class MockFileScanner : IFileScanner
     {
-        public event EventHandler<FileFoundEventArgs>? FileFound;
+        public event EventHandler<FileFoundEventArgs>? FileFound
+        {
+            add { /* Mock implementation - event not used */ }
+            remove { /* Mock implementation - event not used */ }
+        }
 
         public async Task<IEnumerable<CoreFileInfo>> ScanDirectoryAsync(string directoryPath, SearchOptions options, CancellationToken cancellationToken = default)
         {

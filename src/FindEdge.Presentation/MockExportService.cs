@@ -14,7 +14,7 @@ namespace FindEdge.Presentation
     /// </summary>
     public class MockExportService : IExportService
     {
-        public async Task<byte[]> ExportSearchResultsAsync(IEnumerable<SearchResult> results, ExportFormat format, ExportOptions options = null, CancellationToken cancellationToken = default)
+        public async Task<byte[]> ExportSearchResultsAsync(IEnumerable<SearchResult> results, ExportFormat format, ExportOptions options, CancellationToken cancellationToken = default)
         {
             await Task.Delay(500, cancellationToken);
 
@@ -31,7 +31,7 @@ namespace FindEdge.Presentation
             return Encoding.UTF8.GetBytes(content);
         }
 
-        public async Task<byte[]> ExportDuplicateGroupsAsync(IEnumerable<DuplicateGroup> groups, ExportFormat format, ExportOptions options = null, CancellationToken cancellationToken = default)
+        public async Task<byte[]> ExportDuplicateGroupsAsync(IEnumerable<DuplicateGroup> groups, ExportFormat format, ExportOptions options, CancellationToken cancellationToken = default)
         {
             await Task.Delay(500, cancellationToken);
 
@@ -48,7 +48,7 @@ namespace FindEdge.Presentation
             return Encoding.UTF8.GetBytes(content);
         }
 
-        public async Task<byte[]> ExportStatisticsAsync(SearchStatistics statistics, ExportFormat format, ExportOptions options = null, CancellationToken cancellationToken = default)
+        public async Task<byte[]> ExportStatisticsAsync(SearchStatistics statistics, ExportFormat format, ExportOptions options, CancellationToken cancellationToken = default)
         {
             await Task.Delay(500, cancellationToken);
 

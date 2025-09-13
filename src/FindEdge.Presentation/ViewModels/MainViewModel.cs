@@ -24,14 +24,14 @@ namespace FindEdge.Presentation.ViewModels
             _searchEngine = searchEngine ?? throw new ArgumentNullException(nameof(searchEngine));
             
             // Initialiser les commandes
-            SearchCommand = new RelayCommand(async () => await ExecuteSearchAsync(), () => !IsSearching && !string.IsNullOrWhiteSpace(SearchTerm));
-            StopSearchCommand = new RelayCommand(() => ExecuteStopSearch(), () => IsSearching);
-            ClearResultsCommand = new RelayCommand(() => ExecuteClearResults(), () => SearchResults.Any());
-            ExportCsvCommand = new RelayCommand(() => ExecuteExportCsv(), () => SearchResults.Any());
-            OpenIndexWindowCommand = new RelayCommand(() => ExecuteOpenIndexWindow());
-            OpenPluginsWindowCommand = new RelayCommand(() => ExecuteOpenPluginsWindow());
-            OpenDuplicatesWindowCommand = new RelayCommand(() => ExecuteOpenDuplicatesWindow());
-            SwitchSearchModeCommand = new RelayCommand(() => ExecuteSwitchSearchMode(SearchMode.Hybrid));
+            SearchCommand = new RelayCommandSimple(async () => await ExecuteSearchAsync(), () => !IsSearching && !string.IsNullOrWhiteSpace(SearchTerm));
+            StopSearchCommand = new RelayCommandSimple(() => ExecuteStopSearch(), () => IsSearching);
+            ClearResultsCommand = new RelayCommandSimple(() => ExecuteClearResults(), () => SearchResults.Any());
+            ExportCsvCommand = new RelayCommandSimple(() => ExecuteExportCsv(), () => SearchResults.Any());
+            OpenIndexWindowCommand = new RelayCommandSimple(() => ExecuteOpenIndexWindow());
+            OpenPluginsWindowCommand = new RelayCommandSimple(() => ExecuteOpenPluginsWindow());
+            OpenDuplicatesWindowCommand = new RelayCommandSimple(() => ExecuteOpenDuplicatesWindow());
+            SwitchSearchModeCommand = new RelayCommandSimple(() => ExecuteSwitchSearchMode(SearchMode.Hybrid));
 
             // Initialiser les options de recherche
             SearchOptions = new SearchOptions
@@ -57,7 +57,7 @@ namespace FindEdge.Presentation.ViewModels
             {
                 if (SetProperty(ref _searchTerm, value))
                 {
-                    ((RelayCommand)SearchCommand).RaiseCanExecuteChanged();
+                    ((RelayCommandSimple)SearchCommand).RaiseCanExecuteChanged();
                 }
             }
         }
@@ -70,8 +70,8 @@ namespace FindEdge.Presentation.ViewModels
             {
                 if (SetProperty(ref _isSearching, value))
                 {
-                    ((RelayCommand)SearchCommand).RaiseCanExecuteChanged();
-                    ((RelayCommand)StopSearchCommand).RaiseCanExecuteChanged();
+                    ((RelayCommandSimple)SearchCommand).RaiseCanExecuteChanged();
+                    ((RelayCommandSimple)StopSearchCommand).RaiseCanExecuteChanged();
                 }
             }
         }
@@ -308,49 +308,4 @@ namespace FindEdge.Presentation.ViewModels
         #endregion
     }
 
-    /// <summary>
-    /// Commande simple implémentant ICommand
-    /// </summary>
-    public class RelayCommand : ICommand
-    {
-        private readonly Action _execute;
-        private readonly Func<bool>? _canExecute;
-
-        public RelayCommand(Action execute, Func<bool>? canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
-
-        public event EventHandler? CanExecuteChanged;
-
-        public bool CanExecute(object? parameter) => _canExecute?.Invoke() ?? true;
-
-        public void Execute(object? parameter) => _execute();
-
-        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-    }
-
-    /// <summary>
-    /// Commande générique implémentant ICommand
-    /// </summary>
-    public class RelayCommand<T> : ICommand
-    {
-        private readonly Action<T> _execute;
-        private readonly Func<T, bool>? _canExecute;
-
-        public RelayCommand(Action<T> execute, Func<T, bool>? canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
-
-        public event EventHandler? CanExecuteChanged;
-
-        public bool CanExecute(object? parameter) => _canExecute?.Invoke((T)parameter!) ?? true;
-
-        public void Execute(object? parameter) => _execute((T)parameter!);
-
-        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-    }
 }

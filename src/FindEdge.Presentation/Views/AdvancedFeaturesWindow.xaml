@@ -1,0 +1,350 @@
+<Window x:Class="FindEdge.Presentation.Views.AdvancedFeaturesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="FindEdge Professional - Fonctionnalités Avancées" 
+        Height="800" Width="1200"
+        WindowStartupLocation="CenterScreen">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#0078D4" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="🚀 FindEdge Professional" 
+                          FontSize="24" 
+                          FontWeight="Bold" 
+                          Foreground="White" 
+                          VerticalAlignment="Center"/>
+                <TextBlock Text=" - Fonctionnalités Avancées" 
+                          FontSize="18" 
+                          Foreground="White" 
+                          VerticalAlignment="Center" 
+                          Margin="10,0,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content -->
+        <TabControl Grid.Row="1" Margin="10">
+            
+            <!-- Recherche Intelligente -->
+            <TabItem Header="🤖 Recherche Intelligente">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Recherche Sémantique -->
+                    <GroupBox Grid.Row="0" Header="Recherche Sémantique" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBox x:Name="SearchQueryTextBox" 
+                                    Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                                    FontSize="14" 
+                                    Padding="5"
+                                    Margin="0,0,0,10"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Recherche Classique" 
+                                       Command="{Binding SearchCommand}"
+                                       Margin="0,0,10,0"
+                                       Padding="10,5"/>
+                                <Button Content="Recherche Sémantique" 
+                                       Command="{Binding SemanticSearchCommand}"
+                                       Margin="0,0,10,0"
+                                       Padding="10,5"/>
+                                <CheckBox Content="Activer la recherche sémantique" 
+                                         IsChecked="{Binding IsSemanticSearchEnabled}"
+                                         VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Recherche en Langage Naturel -->
+                    <GroupBox Grid.Row="1" Header="Recherche en Langage Naturel" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBox x:Name="NaturalLanguageTextBox" 
+                                    Text="{Binding NaturalLanguageQuery, UpdateSourceTrigger=PropertyChanged}"
+                                    FontSize="14" 
+                                    Padding="5"
+                                    Margin="0,0,0,10"
+                                    TextWrapping="Wrap"/>
+                            <Button Content="Recherche en Langage Naturel" 
+                                   Command="{Binding NaturalLanguageSearchCommand}"
+                                   Padding="10,5"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Suggestions -->
+                    <GroupBox Grid.Row="2" Header="Suggestions Intelligentes">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <ListBox Grid.Column="0" 
+                                    ItemsSource="{Binding SearchSuggestions}"
+                                    Margin="0,0,5,0">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding DisplayText}" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding Query}" FontSize="12" Foreground="Gray"/>
+                                            <TextBlock Text="{Binding Category}" FontSize="10" Foreground="Blue"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            
+                            <ListBox Grid.Column="1" 
+                                    ItemsSource="{Binding SearchResults}"
+                                    Margin="5,0,0,0">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding FileName}" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding FilePath}" FontSize="12" Foreground="Gray"/>
+                                            <TextBlock Text="{Binding RelevanceScore, StringFormat='Pertinence: {0:P2}'}" FontSize="10" Foreground="Green"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- Status -->
+                    <StatusBar Grid.Row="3">
+                        <StatusBarItem>
+                            <TextBlock Text="{Binding StatusMessage}"/>
+                        </StatusBarItem>
+                        <StatusBarItem>
+                            <ProgressBar IsIndeterminate="{Binding IsLoading}" Width="100" Height="16"/>
+                        </StatusBarItem>
+                    </StatusBar>
+                </Grid>
+            </TabItem>
+
+            <!-- Visualisation -->
+            <TabItem Header="🎨 Visualisation">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Contrôles de Visualisation -->
+                    <GroupBox Grid.Row="0" Header="Contrôles de Visualisation" Margin="0,0,0,10">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <Label Content="Type de visualisation:" VerticalAlignment="Center"/>
+                                <ComboBox SelectedItem="{Binding SelectedVisualizationType}" Width="150" Margin="10,0,0,0">
+                                    <ComboBoxItem Content="Mosaic"/>
+                                    <ComboBoxItem Content="Timeline"/>
+                                    <ComboBoxItem Content="Heatmap"/>
+                                    <ComboBoxItem Content="Network"/>
+                                </ComboBox>
+                                <CheckBox Content="Activer la visualisation" 
+                                         IsChecked="{Binding IsVisualizationEnabled}"
+                                         VerticalAlignment="Center"
+                                         Margin="20,0,0,0"/>
+                            </StackPanel>
+                            <Button Content="Générer Visualisation" 
+                                   Command="{Binding GenerateVisualizationCommand}"
+                                   Padding="10,5"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Zone de Visualisation -->
+                    <GroupBox Grid.Row="1" Header="Visualisation des Données">
+                        <ScrollViewer>
+                            <ContentControl Content="{Binding Visualizations}">
+                                <ContentControl.ContentTemplate>
+                                    <DataTemplate>
+                                        <Border Background="LightGray" Padding="10" Margin="5">
+                                            <TextBlock Text="{Binding}" FontSize="12"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ContentControl.ContentTemplate>
+                            </ContentControl>
+                        </ScrollViewer>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <!-- Analytics -->
+            <TabItem Header="📊 Analytics">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Contrôles Analytics -->
+                    <GroupBox Grid.Row="0" Header="Contrôles Analytics" Margin="0,0,0,10">
+                        <StackPanel>
+                            <Button Content="Générer Analytics" 
+                                   Command="{Binding GenerateAnalyticsCommand}"
+                                   Padding="10,5"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Données Analytics -->
+                    <GroupBox Grid.Row="1" Header="Données Analytics">
+                        <ScrollViewer>
+                            <ContentControl Content="{Binding AnalyticsData}">
+                                <ContentControl.ContentTemplate>
+                                    <DataTemplate>
+                                        <Border Background="LightBlue" Padding="10" Margin="5">
+                                            <TextBlock Text="{Binding}" FontSize="12"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ContentControl.ContentTemplate>
+                            </ContentControl>
+                        </ScrollViewer>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <!-- Collaboration -->
+            <TabItem Header="🌍 Collaboration">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Contrôles Collaboration -->
+                    <GroupBox Grid.Row="0" Header="Contrôles Collaboration" Margin="0,0,0,10">
+                        <StackPanel>
+                            <CheckBox Content="Activer la collaboration" 
+                                     IsChecked="{Binding IsCollaborationEnabled}"
+                                     Margin="0,0,0,10"/>
+                            <Button Content="Partager Recherche" 
+                                   Command="{Binding ShareSearchCommand}"
+                                   Padding="10,5"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Éléments de Collaboration -->
+                    <GroupBox Grid.Row="1" Header="Éléments de Collaboration">
+                        <ScrollViewer>
+                            <ContentControl Content="{Binding CollaborationItems}">
+                                <ContentControl.ContentTemplate>
+                                    <DataTemplate>
+                                        <Border Background="LightGreen" Padding="10" Margin="5">
+                                            <TextBlock Text="{Binding}" FontSize="12"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ContentControl.ContentTemplate>
+                            </ContentControl>
+                        </ScrollViewer>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <!-- Aide et Apprentissage -->
+            <TabItem Header="💡 Aide et Apprentissage">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Contrôles Aide -->
+                    <GroupBox Grid.Row="0" Header="Contrôles Aide" Margin="0,0,0,10">
+                        <StackPanel>
+                            <Button Content="Obtenir Aide" 
+                                   Command="{Binding GetHelpCommand}"
+                                   Padding="10,5"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Éléments d'Aide -->
+                    <GroupBox Grid.Row="1" Header="Aide et Apprentissage">
+                        <ScrollViewer>
+                            <ContentControl Content="{Binding HelpItems}">
+                                <ContentControl.ContentTemplate>
+                                    <DataTemplate>
+                                        <Border Background="LightYellow" Padding="10" Margin="5">
+                                            <TextBlock Text="{Binding}" FontSize="12"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ContentControl.ContentTemplate>
+                            </ContentControl>
+                        </ScrollViewer>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <!-- Personnalisation -->
+            <TabItem Header="🎭 Personnalisation">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Contrôles Personnalisation -->
+                    <GroupBox Grid.Row="0" Header="Contrôles Personnalisation" Margin="0,0,0,10">
+                        <StackPanel>
+                            <Button Content="Personnaliser Interface" 
+                                   Command="{Binding PersonalizeInterfaceCommand}"
+                                   Padding="10,5"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Options de Personnalisation -->
+                    <GroupBox Grid.Row="1" Header="Options de Personnalisation">
+                        <ScrollViewer>
+                            <StackPanel>
+                                <TextBlock Text="Thèmes disponibles:" FontWeight="Bold" Margin="0,0,0,10"/>
+                                <ListBox Height="100" Margin="0,0,0,10">
+                                    <ListBoxItem Content="Thème Clair"/>
+                                    <ListBoxItem Content="Thème Sombre"/>
+                                    <ListBoxItem Content="Thème High Contrast"/>
+                                </ListBox>
+                                
+                                <TextBlock Text="Profils de recherche:" FontWeight="Bold" Margin="0,0,0,10"/>
+                                <ListBox Height="100" Margin="0,0,0,10">
+                                    <ListBoxItem Content="Profil Développeur"/>
+                                    <ListBoxItem Content="Profil Designer"/>
+                                    <ListBoxItem Content="Profil Analyste"/>
+                                </ListBox>
+                                
+                                <TextBlock Text="Raccourcis clavier:" FontWeight="Bold" Margin="0,0,0,10"/>
+                                <ListBox Height="100">
+                                    <ListBoxItem Content="Ctrl+F - Recherche"/>
+                                    <ListBoxItem Content="Ctrl+Shift+F - Recherche avancée"/>
+                                    <ListBoxItem Content="F3 - Suivant"/>
+                                </ListBox>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+
+        <!-- Footer -->
+        <StatusBar Grid.Row="2">
+            <StatusBarItem>
+                <TextBlock Text="FindEdge Professional - Fonctionnalités Avancées"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding StatusMessage}"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <ProgressBar IsIndeterminate="{Binding IsLoading}" Width="100" Height="16"/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>

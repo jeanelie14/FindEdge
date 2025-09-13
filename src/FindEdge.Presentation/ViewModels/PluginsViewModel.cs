@@ -21,8 +21,8 @@ namespace FindEdge.Presentation.ViewModels
             _pluginManager = pluginManager ?? throw new ArgumentNullException(nameof(pluginManager));
             
             // Initialiser les commandes
-            LoadPluginsCommand = new RelayCommand(async () => await ExecuteLoadPluginsAsync());
-            UnloadPluginCommand = new RelayCommand(() => ExecuteUnloadPlugin("test"));
+            LoadPluginsCommand = new RelayCommandSimple(async () => await ExecuteLoadPluginsAsync());
+            UnloadPluginCommand = new RelayCommandSimple(() => ExecuteUnloadPlugin("test"));
 
             // Initialiser les collections
             Plugins = new ObservableCollection<PluginInfo>();

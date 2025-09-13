@@ -24,10 +24,10 @@ namespace FindEdge.Presentation.ViewModels
             _indexManager = indexManager ?? throw new ArgumentNullException(nameof(indexManager));
             
             // Initialiser les commandes
-            BuildIndexCommand = new RelayCommand(async () => await ExecuteBuildIndexAsync(), () => !IsIndexing);
-            UpdateIndexCommand = new RelayCommand(async () => await ExecuteUpdateIndexAsync(), () => !IsIndexing && IsIndexAvailable);
-            DeleteIndexCommand = new RelayCommand(async () => await ExecuteDeleteIndexAsync(), () => !IsIndexing);
-            RefreshStatusCommand = new RelayCommand(async () => await ExecuteRefreshStatusAsync());
+            BuildIndexCommand = new RelayCommandSimple(async () => await ExecuteBuildIndexAsync(), () => !IsIndexing);
+            UpdateIndexCommand = new RelayCommandSimple(async () => await ExecuteUpdateIndexAsync(), () => !IsIndexing && IsIndexAvailable);
+            DeleteIndexCommand = new RelayCommandSimple(async () => await ExecuteDeleteIndexAsync(), () => !IsIndexing);
+            RefreshStatusCommand = new RelayCommandSimple(async () => await ExecuteRefreshStatusAsync());
 
             // Initialiser la configuration
             IndexConfiguration = new IndexConfiguration

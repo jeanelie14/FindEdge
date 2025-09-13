@@ -1,4 +1,5 @@
 using System.Windows;
+using FindEdge.Core.Interfaces;
 using FindEdge.Presentation.ViewModels;
 
 namespace FindEdge.Presentation.Views
@@ -14,6 +15,14 @@ namespace FindEdge.Presentation.Views
             
             // Initialiser le ViewModel
             DataContext = new MainViewModel(new MockHybridSearchEngine());
+        }
+
+        public MainWindow(MainViewModel mainViewModel)
+        {
+            InitializeComponent();
+            
+            // Utiliser le ViewModel fourni
+            DataContext = mainViewModel;
         }
     }
 }
