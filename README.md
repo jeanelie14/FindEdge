@@ -16,7 +16,7 @@ FindEdge Professional est une application desktop moderne de recherche de fichie
 - ✅ **Panneau de statistiques** : Sommaire, Concordances, Rapports
 - ✅ **Status bar** : Indicateurs de statut et clavier
 - ✅ **Recherche hybride** : Recherche par nom de fichier et contenu
-- ✅ **Export CSV** : Export des résultats de recherche
+- 🔄 **Export CSV** : Interface préparée, implémentation en cours
 - ✅ **Recherche en temps réel** : Progression et annulation
 - ✅ **Architecture MVVM** : Pattern Model-View-ViewModel avec injection de dépendances
 - ✅ **Services modulaires** : Système de services extensible avec implémentations mock
@@ -26,13 +26,13 @@ FindEdge Professional est une application desktop moderne de recherche de fichie
 - ✅ **Gestion de l'index** : Interface pour la configuration de l'indexation
 
 ### 🎯 Fonctionnalités avancées (Accessibles via bouton ⚙️)
-- ✅ **Recherche sémantique** : Recherche intelligente basée sur le sens
-- ✅ **Recherche en langage naturel** : Requêtes en français naturel
-- ✅ **Génération de visualisations** : Graphiques et diagrammes des résultats
-- ✅ **Analytics et rapports** : Statistiques détaillées et rapports
-- ✅ **Partage et collaboration** : Partage de recherches et résultats
-- ✅ **Aide et apprentissage** : Système d'aide intégré
-- ✅ **Personnalisation** : Personnalisation de l'interface utilisateur
+- 🔄 **Recherche sémantique** : Interface préparée, implémentation mock
+- 🔄 **Recherche en langage naturel** : Interface préparée, implémentation mock
+- 🔄 **Génération de visualisations** : Interface préparée, implémentation mock
+- 🔄 **Analytics et rapports** : Interface préparée, implémentation mock
+- 🔄 **Partage et collaboration** : Interface préparée, implémentation mock
+- 🔄 **Aide et apprentissage** : Interface préparée, implémentation mock
+- 🔄 **Personnalisation** : Interface préparée, implémentation mock
 
 ### Fonctionnalités prévues (Phases suivantes)
 - 🔄 **Indexation hybride** : Mode live scan + indexation optionnelle
@@ -66,10 +66,11 @@ FindEdge/
 
 ### Architecture technique
 - **Pattern MVVM** : Séparation claire entre la logique métier et l'interface
-- **Injection de dépendances** : Conteneur de services personnalisé
+- **Injection de dépendances** : Conteneur de services personnalisé (`SimpleServiceContainer`)
 - **Services modulaires** : Architecture extensible avec interfaces
-- **Implémentations mock** : Services de test et de développement
+- **Implémentations mock** : Services de test et de développement (59 warnings de compilation)
 - **Fenêtres spécialisées** : Architecture modulaire pour les fonctionnalités avancées
+- **Services commentés** : Certains services avancés sont temporairement désactivés
 
 ## 🚀 Installation et exécution
 
@@ -187,11 +188,18 @@ dotnet test --collect:"XPlat Code Coverage"
 - Tests d'interface utilisateur
 
 ### État actuel des tests
-- ✅ **Tests de build** : Compilation réussie avec warnings mineurs
+- ✅ **Tests de build** : Compilation réussie avec 59 warnings
 - ✅ **Tests de démarrage** : Application démarre sans erreurs
 - ✅ **Tests d'interface** : Toutes les fenêtres s'ouvrent correctement
 - 🔄 **Tests unitaires** : À implémenter pour les services
 - 🔄 **Tests d'intégration** : À implémenter pour les fonctionnalités
+
+### Warnings actuels
+- **Nullable reference types** : 15 warnings (propriétés non-nullables non initialisées)
+- **Async methods sans await** : 20 warnings (méthodes async sans opérations asynchrones)
+- **Events non utilisés** : 10 warnings (événements déclarés mais jamais déclenchés)
+- **Variables non utilisées** : 8 warnings (variables déclarées mais jamais utilisées)
+- **Autres** : 6 warnings (déréférencement possible de null, etc.)
 
 ## 🔮 Roadmap
 
@@ -270,14 +278,15 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 - **Recherche hybride** : Nom de fichier + contenu
 - **Filtres avancés** : Taille, date, type de fichier
 - **Interface professionnelle** : Menu bar, toolbar, panneaux
-- **Export des résultats** : CSV et autres formats
 - **Recherche en temps réel** : Progression et annulation
+- 🔄 **Export des résultats** : Interface préparée (CSV en cours d'implémentation)
 
 ### 🆕 Fonctionnalités supplémentaires
 - **Fenêtres spécialisées** : Gestion des doublons, plugins, index
-- **Fonctionnalités avancées** : Recherche sémantique, visualisations
+- **Fonctionnalités avancées** : Interfaces préparées pour recherche sémantique, visualisations
 - **Architecture modulaire** : Services extensibles et testables
 - **Interface optimisée** : Une seule fenêtre principale avec accès aux outils
+- **Implémentations mock** : Services de développement avec données de test
 
 ## 📋 État actuel du projet
 
@@ -295,14 +304,29 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 - **StartupUri** : Suppression de l'ouverture automatique de fenêtre
 - **Architecture** : Séparation claire entre fenêtre principale et fonctionnalités avancées
 
+### ⚠️ Limitations actuelles
+- **Export CSV** : Interface préparée mais non fonctionnelle (TODO dans le code)
+- **Fonctionnalités avancées** : Interfaces complètes mais implémentations mock basiques
+- **Services commentés** : Certains services avancés sont temporairement désactivés
+- **Warnings de compilation** : 59 warnings (principalement nullable reference types et async)
+- **Tests unitaires** : Aucun test unitaire implémenté actuellement
+
 ### 🎯 Fonctionnalités opérationnelles
 - ✅ **Interface principale** : Recherche de fichiers avec tous les filtres
-- ✅ **Fonctionnalités avancées** : Accessibles via bouton ⚙️
+- ✅ **Fenêtres spécialisées** : Accès aux outils via boutons dédiés
 - ✅ **Gestion des doublons** : Interface dédiée fonctionnelle
 - ✅ **Gestion des plugins** : Interface de gestion des extensions
 - ✅ **Gestion de l'index** : Interface de configuration d'indexation
-- ✅ **Export CSV** : Export des résultats de recherche
 - ✅ **Recherche en temps réel** : Progression et annulation
+- 🔄 **Export CSV** : Interface préparée, implémentation en cours
+- 🔄 **Fonctionnalités avancées** : Interfaces préparées, implémentations mock
+
+### 🚀 Prochaines étapes de développement
+1. **Implémentation de l'export CSV** : Finaliser la fonctionnalité d'export
+2. **Résolution des warnings** : Corriger les 59 warnings de compilation
+3. **Tests unitaires** : Implémenter les tests pour les services
+4. **Services avancés** : Activer et implémenter les services commentés
+5. **Fonctionnalités mock** : Remplacer les implémentations mock par de vraies implémentations
 
 ## 🙏 Remerciements
 
