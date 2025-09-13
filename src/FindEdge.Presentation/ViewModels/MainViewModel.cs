@@ -31,6 +31,7 @@ namespace FindEdge.Presentation.ViewModels
             OpenIndexWindowCommand = new RelayCommandSimple(() => ExecuteOpenIndexWindow());
             OpenPluginsWindowCommand = new RelayCommandSimple(() => ExecuteOpenPluginsWindow());
             OpenDuplicatesWindowCommand = new RelayCommandSimple(() => ExecuteOpenDuplicatesWindow());
+            OpenAdvancedFeaturesCommand = new RelayCommandSimple(() => ExecuteOpenAdvancedFeatures());
             SwitchSearchModeCommand = new RelayCommandSimple(() => ExecuteSwitchSearchMode(SearchMode.Hybrid));
 
             // Initialiser les options de recherche
@@ -152,6 +153,7 @@ namespace FindEdge.Presentation.ViewModels
         public ICommand OpenIndexWindowCommand { get; }
         public ICommand OpenPluginsWindowCommand { get; }
         public ICommand OpenDuplicatesWindowCommand { get; }
+        public ICommand OpenAdvancedFeaturesCommand { get; }
         public ICommand SwitchSearchModeCommand { get; }
 
         #endregion
@@ -247,6 +249,27 @@ namespace FindEdge.Presentation.ViewModels
             var duplicatesWindow = new Views.DuplicatesWindow();
             duplicatesWindow.Owner = App.Current.MainWindow;
             duplicatesWindow.ShowDialog();
+        }
+
+        private void ExecuteOpenAdvancedFeatures()
+        {
+            // Récupérer le conteneur de services depuis l'App
+            var app = (App)App.Current;
+            var serviceContainer = app.ServiceContainer;
+            
+            var advancedFeaturesWindow = new Views.AdvancedFeaturesWindow(
+                new AdvancedFeaturesViewModel(
+                    serviceContainer.Get<ISemanticSearchEngine>(),
+                    serviceContainer.Get<IIntelligentSuggestions>(),
+                    serviceContainer.Get<IVisualizationService>(),
+                    serviceContainer.Get<IAnalyticsService>(),
+                    serviceContainer.Get<ICollaborationService>(),
+                    serviceContainer.Get<IHelpLearningService>(),
+                    serviceContainer.Get<IPersonalizationService>()
+                )
+            );
+            advancedFeaturesWindow.Owner = App.Current.MainWindow;
+            advancedFeaturesWindow.ShowDialog();
         }
 
         private void ExecuteSwitchSearchMode(SearchMode mode)

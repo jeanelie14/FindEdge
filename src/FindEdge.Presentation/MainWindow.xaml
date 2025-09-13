@@ -140,6 +140,7 @@
                 <Button Content="📄" ToolTip="Liste" Style="{StaticResource ToolbarButton}"/>
                 <Button Content="👁️" ToolTip="Aperçu" Style="{StaticResource ToolbarButton}"/>
                 <Separator/>
+                <Button Content="⚙️" ToolTip="Fonctionnalités avancées" Command="{Binding OpenAdvancedFeaturesCommand}" Style="{StaticResource ToolbarButton}"/>
                 <Button Content="❓" ToolTip="Aide" Style="{StaticResource ToolbarButton}"/>
             </ToolBar>
         </ToolBarTray>

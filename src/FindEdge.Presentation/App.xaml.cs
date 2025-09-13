@@ -13,6 +13,8 @@ namespace FindEdge.Presentation
     public partial class App : Application
     {
         private IServiceContainer _serviceContainer;
+        
+        public IServiceContainer? ServiceContainer => _serviceContainer;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -27,9 +29,8 @@ namespace FindEdge.Presentation
                 var mainWindow = CreateMainWindow();
                 mainWindow.Show();
 
-                // Créer la fenêtre des fonctionnalités avancées
-                var advancedFeaturesWindow = CreateAdvancedFeaturesWindow();
-                advancedFeaturesWindow.Show();
+                // Ne pas ouvrir automatiquement la fenêtre des fonctionnalités avancées
+                // Elle sera ouverte via le menu ou les boutons de l'interface
             }
             catch (Exception ex)
             {

@@ -60,12 +60,13 @@ namespace FindEdge.Infrastructure.Services
         {
             // Enregistrer les services de base
             Register<IFileScanner>(() => new FileScanner());
-            Register<IContentParserRegistry>(() => new ContentParserRegistry());
+            Register<IPluginManager>(() => new PluginManager());
+            Register<IContentParserRegistry>(() => new ContentParserRegistry(Resolve<IPluginManager>()));
             Register<IIndexManager>(() => new SimpleIndexManager(Resolve<IFileScanner>(), Resolve<IContentParserRegistry>()));
             Register<ISearchEngine>(() => new LiveSearchEngine(Resolve<IContentParserRegistry>()));
             Register<IHybridSearchEngine>(() => new HybridSearchEngine(Resolve<ISearchEngine>(), Resolve<IIndexManager>()));
+            Register<IIndexedSearchEngine>(() => new MockIndexedSearchEngine());
             Register<IDuplicateDetector>(() => new DuplicateDetector(Resolve<IContentParserRegistry>()));
-            // Register<IExportService>(() => new MockExportService());
             
             // Enregistrer les services avancés
             Register<ISemanticSearchEngine>(() => new SemanticSearchEngine(
@@ -80,6 +81,7 @@ namespace FindEdge.Infrastructure.Services
             // Register missing services with mock implementations
             Register<IAnalyticsService>(() => new MockAnalyticsService());
             Register<IPersonalizationService>(() => new MockPersonalizationService());
+            // Register<IExportService>(() => new MockExportService());
         }
 
         public void Dispose()
