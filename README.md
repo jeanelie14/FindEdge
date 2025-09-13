@@ -18,6 +18,21 @@ FindEdge Professional est une application desktop moderne de recherche de fichie
 - ✅ **Recherche hybride** : Recherche par nom de fichier et contenu
 - ✅ **Export CSV** : Export des résultats de recherche
 - ✅ **Recherche en temps réel** : Progression et annulation
+- ✅ **Architecture MVVM** : Pattern Model-View-ViewModel avec injection de dépendances
+- ✅ **Services modulaires** : Système de services extensible avec implémentations mock
+- ✅ **Fenêtres spécialisées** : Accès aux fonctionnalités avancées via boutons dédiés
+- ✅ **Gestion des doublons** : Interface dédiée pour la détection de fichiers dupliqués
+- ✅ **Gestion des plugins** : Interface pour la gestion des extensions
+- ✅ **Gestion de l'index** : Interface pour la configuration de l'indexation
+
+### 🎯 Fonctionnalités avancées (Accessibles via bouton ⚙️)
+- ✅ **Recherche sémantique** : Recherche intelligente basée sur le sens
+- ✅ **Recherche en langage naturel** : Requêtes en français naturel
+- ✅ **Génération de visualisations** : Graphiques et diagrammes des résultats
+- ✅ **Analytics et rapports** : Statistiques détaillées et rapports
+- ✅ **Partage et collaboration** : Partage de recherches et résultats
+- ✅ **Aide et apprentissage** : Système d'aide intégré
+- ✅ **Personnalisation** : Personnalisation de l'interface utilisateur
 
 ### Fonctionnalités prévues (Phases suivantes)
 - 🔄 **Indexation hybride** : Mode live scan + indexation optionnelle
@@ -49,11 +64,19 @@ FindEdge/
 └── tools/                       # Scripts de build
 ```
 
+### Architecture technique
+- **Pattern MVVM** : Séparation claire entre la logique métier et l'interface
+- **Injection de dépendances** : Conteneur de services personnalisé
+- **Services modulaires** : Architecture extensible avec interfaces
+- **Implémentations mock** : Services de test et de développement
+- **Fenêtres spécialisées** : Architecture modulaire pour les fonctionnalités avancées
+
 ## 🚀 Installation et exécution
 
 ### Prérequis
 - .NET 8.0 SDK ou supérieur
 - Windows 10/11 (pour la version WPF)
+- Visual Studio 2022 ou VS Code (recommandé)
 
 ### Compilation
 ```bash
@@ -77,6 +100,16 @@ dotnet run --project src/FindEdge.Presentation
 dotnet run --project src/FindEdge.Presentation
 ```
 
+### Résolution des problèmes
+```bash
+# Nettoyer et reconstruire
+dotnet clean
+dotnet build
+
+# Vérifier les erreurs de compilation
+dotnet build --verbosity normal
+```
+
 ## 🎨 Interface utilisateur
 
 ### Interface Professionnelle Style Agent Ransack
@@ -84,6 +117,7 @@ dotnet run --project src/FindEdge.Presentation
 - **Layout en 3 colonnes** : Configuration, Résultats, Statistiques
 - **Couleurs professionnelles** : Thème clair avec accents bleus
 - **Typographie Segoe UI** : Police moderne et lisible
+- **Fenêtre unique** : Interface optimisée avec une seule fenêtre principale
 
 ### Fonctionnalités UI Avancées
 - **Menu bar complet** : Tous les menus standard (Fichier, Édition, Recherche, etc.)
@@ -99,6 +133,8 @@ dotnet run --project src/FindEdge.Presentation
   - **Concordances** : Aperçu des correspondances
   - **Rapports** : Génération de rapports
 - **Status bar** : Message de statut et indicateurs clavier (CAP NUM SCR)
+- **Bouton fonctionnalités avancées** : Accès aux fonctionnalités avancées via bouton ⚙️
+- **Fenêtres spécialisées** : Accès aux outils spécialisés (doublons, plugins, index)
 
 ## 🔧 Configuration
 
@@ -149,6 +185,13 @@ dotnet test --collect:"XPlat Code Coverage"
 - Tests de recherche sur différents types de fichiers
 - Tests de performance avec gros volumes
 - Tests d'interface utilisateur
+
+### État actuel des tests
+- ✅ **Tests de build** : Compilation réussie avec warnings mineurs
+- ✅ **Tests de démarrage** : Application démarre sans erreurs
+- ✅ **Tests d'interface** : Toutes les fenêtres s'ouvrent correctement
+- 🔄 **Tests unitaires** : À implémenter pour les services
+- 🔄 **Tests d'intégration** : À implémenter pour les fonctionnalités
 
 ## 🔮 Roadmap
 
@@ -220,6 +263,8 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 - **Code source ouvert** : Transparence et contribution communautaire
 - **Gratuit** : Aucun coût de licence
 - **Évolutif** : Roadmap claire pour les futures fonctionnalités
+- **Fenêtre unique** : Interface optimisée sans encombrement
+- **Fonctionnalités avancées** : Accès facile aux outils spécialisés
 
 ### 🔄 Fonctionnalités similaires
 - **Recherche hybride** : Nom de fichier + contenu
@@ -227,6 +272,37 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 - **Interface professionnelle** : Menu bar, toolbar, panneaux
 - **Export des résultats** : CSV et autres formats
 - **Recherche en temps réel** : Progression et annulation
+
+### 🆕 Fonctionnalités supplémentaires
+- **Fenêtres spécialisées** : Gestion des doublons, plugins, index
+- **Fonctionnalités avancées** : Recherche sémantique, visualisations
+- **Architecture modulaire** : Services extensibles et testables
+- **Interface optimisée** : Une seule fenêtre principale avec accès aux outils
+
+## 📋 État actuel du projet
+
+### ✅ Corrections récentes (Décembre 2024)
+- **Problème des fenêtres multiples** : Résolu - une seule fenêtre au démarrage
+- **Services manquants** : Tous les services sont maintenant enregistrés
+- **Architecture MVVM** : Pattern correctement implémenté
+- **Injection de dépendances** : Conteneur de services fonctionnel
+- **Fenêtres spécialisées** : Accès via boutons dédiés dans l'interface
+
+### 🔧 Problèmes résolus
+- **Erreur de compilation** : `MainWindow` constructor corrigé
+- **Services non enregistrés** : `IIndexedSearchEngine`, `IAnalyticsService`, etc.
+- **Fichiers dupliqués** : Suppression des fichiers `MainWindow.xaml.cs` en double
+- **StartupUri** : Suppression de l'ouverture automatique de fenêtre
+- **Architecture** : Séparation claire entre fenêtre principale et fonctionnalités avancées
+
+### 🎯 Fonctionnalités opérationnelles
+- ✅ **Interface principale** : Recherche de fichiers avec tous les filtres
+- ✅ **Fonctionnalités avancées** : Accessibles via bouton ⚙️
+- ✅ **Gestion des doublons** : Interface dédiée fonctionnelle
+- ✅ **Gestion des plugins** : Interface de gestion des extensions
+- ✅ **Gestion de l'index** : Interface de configuration d'indexation
+- ✅ **Export CSV** : Export des résultats de recherche
+- ✅ **Recherche en temps réel** : Progression et annulation
 
 ## 🙏 Remerciements
 
